@@ -2,20 +2,20 @@
 #include "utils.h"
 
 typedef struct {
-  int mode = 0;               //0: normal chars, 1: specifiying flags, 2: width, 3: precision
+  int mode;               //0: normal chars, 1: specifiying flags, 2: width, 3: precision
 
-  BOOLEAN sign = FALSE;       //TRUE: always use sign regardles wether positive or negative number
-  BOOLEAN padding = FALSE;    //TRUE: pad with 0's instead of spaces
-  BOOLEAN hex_prefix = FALSE; //TRUE: prefix hex numbers with 0x
+  BOOLEAN sign;       //TRUE: always use sign regardles wether positive or negative number
+  BOOLEAN padding;    //TRUE: pad with 0's instead of spaces
+  BOOLEAN hex_prefix; //TRUE: prefix hex numbers with 0x
 
-  BOOLEAN width_specified = FALSE; //Is the width specified or should it be ignored.
-  int width = 0;                   //width of specifier;
+  BOOLEAN width_specified; //Is the width specified or should it be ignored.
+  int width;                   //width of specifier;
 
   //BOOLEAN precision_specified = FALSE;
   //int precision = 0;
 } print_state;
 
-EFI_STATUS printk(EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *CONTEXT, const CHAR16 *format, ...){
+EFI_STATUS printk(EFI_SIMPLE_TEXT_OUT_PROTOCOL *CONTEXT, const CHAR16 *format, ...){
   va_list a_list;
   va_start(a_list, format);
 }
@@ -24,7 +24,7 @@ EFI_STATUS sprintk(CHAR16 *buffer, int max_len, const CHAR16 *format, ...){
   va_list a_list;
   va_start(a_list, format);
 
-  print_state ps;
+  print_state ps = {0, FALSE, FALSE, FALSE, FALSE, 0};
 
   int f_ind = 0;
   int b_ind = 0;
@@ -85,8 +85,6 @@ EFI_STATUS sprintk(CHAR16 *buffer, int max_len, const CHAR16 *format, ...){
         //TODO: implement precision
         //TODO: implement length modifiers
 
-      case 'd':
-        break;
       case 'd':
         break;
       }
