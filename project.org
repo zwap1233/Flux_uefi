@@ -1,11 +1,25 @@
 
-#+TODO: TODO STARTED TESTING | DONE CANCELED
+#+TODO: TODO STARTED TESTING | IMPROVEMENTS DONE CANCELED
 #+STARTUP: showeverything
 
-* TODO [33%] UEFI OS Loader
+SHIFT+Left/Right arrow: change state
+SHIFT+Up/Down arrow: change priority 
+ALT+Enter: add new item below
+ALT+Left/Right arrow: change indentation
+ALT+Up/Down arrow: move item
+
+* TODO [50%] UEFI OS Loader
 ** DONE makefiles for 64bit using mingw
-** STARTED simple printing on screen
-** TODO load OS Core
+** DONE simple printing on screen
+*** TODO Implement max length of sprintk
+*** TODO Implement printing floats
+*** TODO cleanup data types, are there beter types to use?
+*** TODO Proper error reporting on failure
+*** TODO is there a way to use printk without a buffer in the function?
+** TODO Setup virtual memory map
+** STARTED load OS Core
+*** TODO Pass memory map to OS Core
+*** TODO Exit uefi boot services
 
 * TODO [0%] OS Core
 ** TODO makefiles for 64bit
