@@ -1,0 +1,21 @@
+
+#+TODO: TODO STARTED TESTING | DONE CANCELED
+#+STARTUP: showeverything
+
+* TODO [33%] UEFI OS Loader
+** DONE makefiles for 64bit using mingw
+** STARTED simple printing on screen
+** TODO load OS Core
+
+* TODO [0%] OS Core
+** TODO makefiles for 64bit
+** TODO Research binary format, linker script?
+** TODO Simple Printing to screen
+** TODO Interrupts
+** TODO [0%] Memory Mannager
+*** TODO Page allocation and freeing
+*** TODO malloc and free
+** TODO [0%] Proccess Mannager
+*** TODO Schedualing
+** TODO [%] Module loader
+
