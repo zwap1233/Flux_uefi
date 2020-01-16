@@ -1,0 +1,24 @@
+UEFI OS Loader:
+	✔ DONE makefiles for 64bit using mingw @done(20-01-16 04:49)
+	✔ DONE simple printing on screen @done(20-01-16 04:49)
+		☐ Implement max length of sprintk
+		☐ Implement printing floats
+		☐ cleanup data types, are there beter types to use?
+		☐ Proper error reporting on failure
+		☐ is there a way to use printk without a buffer in the function?
+	☐ Setup virtual memory map
+	☐ load OS Core @started(20-01-16 04:51)
+		☐ Pass memory map to OS Core
+		☐ Exit uefi boot services
+
+OS Core:
+	☐ makefiles for 64bit
+	☐ Research binary format, linker script?
+	☐ Simple Printing to screen, rip from UEFI code
+	☐ Interrupts
+	☐ Memory Mannager
+		☐ Page allocation and freeing
+		☐ malloc and free
+	☐ Proccess Mannager
+		☐ Schedualing
+	☐ Module loader
