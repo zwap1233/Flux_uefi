@@ -30,7 +30,7 @@ OBJS:=$(C_OBJS:.c=.o)
 
 .PHONY: all install clean
 
-all: $(OS_EFI)
+all: $(OS_EFI) $(OS_DEBUG_EFI)
 
 $(OS_EFI): $(OBJS)
 	$(CC) -o $@ $(FLAGS) $(LDFLAGS) -e $(ENTRY_POINT) $(OBJS) $(LIBS)
@@ -38,7 +38,7 @@ $(OS_EFI): $(OBJS)
 %.o: %.c
 	$(CC) -MD -c $< -o $@ $(INCLUDES) $(FLAGS) $(CFLAGS)
 
-install: $(OS_EFI)
+install: $(OS_EFI) $(OS_DEBUG_EFI)
 
 clean:
 	rm -f $(OS_EFI)

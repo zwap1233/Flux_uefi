@@ -19,12 +19,23 @@ EFI_STATUS insertInteger(print_state *ps, CHAR16 *buffer, int *index, int base, 
 EFI_STATUS insertUnisgnedInteger(print_state *ps, CHAR16 *buffer, int *index, int base, unsigned int number);
 EFI_STATUS insertUnisgnedLongInteger(print_state *ps, CHAR16 *buffer, int *index, int base, unsigned long long int number);
 
-EFI_SIMPLE_TEXT_OUT_PROTOCOL *CONTEXT;
+EFI_SIMPLE_TEXT_OUT_PROTOCOL *ConOut;
 
 EFI_STATUS init_print(EFI_SIMPLE_TEXT_OUT_PROTOCOL *protocol){
-  CONTEXT = protocol;
+  EFI_STATUS status = EFI_SUCCESS;
+  ConOut = protocol;
 
-  return EFI_SUCCESS;
+  status = ConOut->ClearScreen(ConOut);
+  if(EFI_ERROR(status)){
+    return status;
+  }
+  
+  status = ConOut->OutputString(ConOut, L"Flux Operating System UEFI Bootloader\n\r");
+  if (EFI_ERROR(status)){
+    return status;
+  }
+
+  return status;
 }
 
 EFI_STATUS printk(const CHAR16 *format, ...){
@@ -34,7 +45,7 @@ EFI_STATUS printk(const CHAR16 *format, ...){
   CHAR16 buffer[2048];
   EFI_STATUS status = vsprintk(buffer, 2048, format, a_list);
 
-  CONTEXT->OutputString(CONTEXT, buffer);
+  ConOut->OutputString(ConOut, buffer);
 
   va_end(a_list);
   return status;
