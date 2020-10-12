@@ -3,11 +3,11 @@
 #include "utils.h"
 
 //#define __TEST
-#define __TEST_INT
-#define __TEST_OTHER
-#define __TEST_HEX
-#define __TEST_POINTER
-#define __TEST_STR
+//#define __TEST_INT
+//#define __TEST_OTHER
+//#define __TEST_HEX
+//#define __TEST_POINTER
+//#define __TEST_STR
 
 EFI_STATUS printImageBase(EFI_HANDLE ImageHandle);
 void testPrintFunction();
@@ -16,6 +16,13 @@ EFI_SYSTEM_TABLE *gST;
 
 EFI_GUID loaded_image_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
 
+/**
+ * @brief The entery point of the uefi loader
+ * 
+ * @param ImageHandle 
+ * @param SystemTable 
+ * @return EFI_STATUS 
+ */
 EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable){
   EFI_STATUS status;
   EFI_INPUT_KEY Key;
@@ -42,6 +49,12 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable){
   return status;
 }
 
+/**
+ * @brief Prints the address location where this image is loaded.
+ * 
+ * @param ImageHandle The EFI_HANDLE
+ * @return EFI_STATUS 
+ */
 EFI_STATUS printImageBase(EFI_HANDLE ImageHandle){
   EFI_LOADED_IMAGE *loaded_image = NULL;
   EFI_STATUS status = EFI_SUCCESS;
@@ -56,6 +69,10 @@ EFI_STATUS printImageBase(EFI_HANDLE ImageHandle){
   return status;
 }
 
+/**
+ * @brief Tests the printk function
+ * 
+ */
 void testPrintFunction(){
   printk(L"Hello this is a test\n\r");
 

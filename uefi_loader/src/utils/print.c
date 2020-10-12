@@ -2,14 +2,14 @@
 #include "utils.h"
 
 typedef struct {
-  int mode;               //0: normal chars, 1: specifiying flags, 2: width, 3: precision
+  int mode;           //0: normal chars, 1: specifiying flags, 2: width, 3: precision
 
   BOOLEAN sign;       //TRUE: always use sign regardles wether positive or negative number
   BOOLEAN padding;    //TRUE: pad with 0's instead of spaces
   BOOLEAN hex_prefix; //TRUE: prefix hex numbers with 0x
 
   BOOLEAN width_specified; //Is the width specified or should it be ignored.
-  int width;                   //width of specifier;
+  int width;               //width of specifier;
 
   //BOOLEAN precision_specified = FALSE;
   //int precision = 0;
@@ -21,6 +21,12 @@ EFI_STATUS insertUnisgnedLongInteger(print_state *ps, CHAR16 *buffer, int *index
 
 EFI_SIMPLE_TEXT_OUT_PROTOCOL *ConOut;
 
+/**
+ * @brief Setup printing
+ * 
+ * @param protocol The EFI_SIMPLE_TEXT_OUT_PROTOCOL
+ * @return EFI_STATUS The resulting status from the setup
+ */
 EFI_STATUS init_print(EFI_SIMPLE_TEXT_OUT_PROTOCOL *protocol){
   EFI_STATUS status = EFI_SUCCESS;
   ConOut = protocol;
@@ -38,6 +44,13 @@ EFI_STATUS init_print(EFI_SIMPLE_TEXT_OUT_PROTOCOL *protocol){
   return status;
 }
 
+/**
+ * @brief Like printf
+ * 
+ * @param format 
+ * @param ... 
+ * @return EFI_STATUS 
+ */
 EFI_STATUS printk(const CHAR16 *format, ...){
   va_list a_list;
   va_start(a_list, format);
@@ -51,6 +64,15 @@ EFI_STATUS printk(const CHAR16 *format, ...){
   return status;
 }
 
+/**
+ * @brief like sprintf
+ * 
+ * @param buffer 
+ * @param max_len 
+ * @param format 
+ * @param ... 
+ * @return EFI_STATUS 
+ */
 EFI_STATUS sprintk(CHAR16 *buffer, int max_len, const CHAR16 *format, ...){
   va_list a_list;
   va_start(a_list, format);
@@ -61,6 +83,15 @@ EFI_STATUS sprintk(CHAR16 *buffer, int max_len, const CHAR16 *format, ...){
   return status;
 }
 
+/**
+ * @brief Like vsprintf
+ * 
+ * @param buffer 
+ * @param max_len 
+ * @param format 
+ * @param a_list 
+ * @return EFI_STATUS 
+ */
 EFI_STATUS vsprintk(CHAR16 *buffer, int max_len, const CHAR16 *format, va_list a_list){
   print_state ps = {0, FALSE, FALSE, FALSE, FALSE, 0};
 
@@ -179,6 +210,15 @@ EFI_STATUS vsprintk(CHAR16 *buffer, int max_len, const CHAR16 *format, va_list a
         }
         ps.mode = 0;
         break;
+      
+      case 'S': ;
+        char *str8 = (char *) va_arg(a_list, unsigned int *);
+        int i8 = 0;
+        for(i8 = 0; str8[i8] != '\0'; ++i8, ++b_ind){
+          buffer[b_ind] = str8[i8];
+        }
+        ps.mode = 0;
+        break;
 
         //pointer address
       case 'p':
@@ -200,6 +240,16 @@ EFI_STATUS vsprintk(CHAR16 *buffer, int max_len, const CHAR16 *format, va_list a
   return EFI_SUCCESS;
 }
 
+/**
+ * @brief Write a integer to buffer starting at index. Max number length is 256
+ * 
+ * @param ps The print_state struct of the print job
+ * @param buffer A pointer to the CHAR16 buffer where the integer should be written to.
+ * @param index The starting point in the buffer, it should be safe to write to this index. Its updated after number is written.
+ * @param base The base of the number to be writen (i.e. 10 for decimal, 16 for hex, etc.) Max supported is 16
+ * @param number The number to be written
+ * @return EFI_STATUS 
+ */
 EFI_STATUS insertInteger(print_state *ps, CHAR16 *buffer, int *index, int base, int number){
   if(ps->sign || (number < 0)){
     buffer[*index] = (number < 0) ? '-' : '+';
@@ -209,15 +259,29 @@ EFI_STATUS insertInteger(print_state *ps, CHAR16 *buffer, int *index, int base, 
   return insertUnisgnedInteger(ps, buffer, index, base, (unsigned int) (number < 0 ? -1*number : number));
 }
 
+/**
+ * @brief Write a unsigned integer to buffer starting at index. Max number length is 256
+ * 
+ * @param ps The print_state struct of the print job
+ * @param buffer A pointer to the CHAR16 buffer where the unsigned integer should be written to.
+ * @param index The starting point in the buffer, it should be safe to write to this index. Its updated after number is written.
+ * @param base The base of the number to be writen (i.e. 10 for decimal, 16 for hex, etc.) Max supported is 16
+ * @param number The number to be written
+ * @return EFI_STATUS 
+ */
 EFI_STATUS insertUnisgnedInteger(print_state *ps, CHAR16 *buffer, int *index, int base, unsigned int number){
   return insertUnisgnedLongInteger(ps, buffer, index, base, (unsigned long long int) number);
 }
 
 /**
- * Writes an unsigned integer, number, to the buffer starting at index.
- * Index is updated as the integer is written. index should point to a spot where it is safe to write to.
- * Base is the number system used (10 for decimal, 16 for hex, etc max supported is 16)
- * Max number to be written is 256 chars long
+ * @brief Write a unsigned long integer to buffer starting at index. Max number length is 256
+ * 
+ * @param ps The print_state struct of the print job
+ * @param buffer A pointer to the CHAR16 buffer where the unsigned long integer should be written to.
+ * @param index The starting point in the buffer, it should be safe to write to this index. Its updated after number is written.
+ * @param base The base of the number to be writen (i.e. 10 for decimal, 16 for hex, etc.) Max supported is 16
+ * @param number The number to be written
+ * @return EFI_STATUS 
  */
 EFI_STATUS insertUnisgnedLongInteger(print_state *ps, CHAR16 *buffer, int *index, int base, unsigned long long int number){
   unsigned long long int num = number;

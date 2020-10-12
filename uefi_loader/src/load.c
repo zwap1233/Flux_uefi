@@ -8,7 +8,16 @@ EFI_HANDLE handles[NR_HANDLES];
 EFI_GUID fs_prot = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
 
 EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *fs_intf;
+EFI_FILE_PROTOCOL *root;
+EFI_FILE_PROTOCOL *hello;
 
+/**
+ * @brief Load the kernal into memory.
+ * 
+ * @param ImageHandle The EFI_HANDLE
+ * @param BootServices The EFI_BOOT_SERVICES
+ * @return EFI_STATUS 
+ */
 EFI_STATUS loadOS(EFI_HANDLE ImageHandle, EFI_BOOT_SERVICES *BootServices){
 
   UINTN handles_size = sizeof(handles)*NR_HANDLES;
@@ -22,6 +31,28 @@ EFI_STATUS loadOS(EFI_HANDLE ImageHandle, EFI_BOOT_SERVICES *BootServices){
   if(EFI_ERROR(status)){
     return status;
   }
+
+  status = fs_intf->OpenVolume(fs_intf, &root);
+  if(EFI_ERROR(status)){
+    return status;
+  }
+  printk(L"Status: %d\n\r", status);
+
+  status = root->Open(root, &hello, L"\\hello.txt", EFI_FILE_MODE_READ, NULL);
+  if(EFI_ERROR(status)){
+    return status;
+  }
+  printk(L"Status: %d\n\r", status);
+
+  char buffer[20];
+  status = hello->Read(hello, 20, buffer);
+  if(EFI_ERROR(status)){
+    return status;
+  }
+  buffer[20] = '\0';
+  printk(L"Status: %d\n\r", status);
+
+  printk(L"Text: %S \n\r", buffer);
 
   return status;
 
