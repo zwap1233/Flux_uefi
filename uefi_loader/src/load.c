@@ -45,7 +45,8 @@ EFI_STATUS loadOS(EFI_HANDLE ImageHandle, EFI_BOOT_SERVICES *BootServices){
   printk(L"Status: %d\n\r", status);
 
   char buffer[20];
-  status = hello->Read(hello, 20, buffer);
+  int buffersize = 20;
+  status = hello->Read(hello, &buffersize, buffer);
   if(EFI_ERROR(status)){
     return status;
   }
