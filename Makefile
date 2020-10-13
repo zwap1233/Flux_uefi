@@ -25,8 +25,7 @@ $(OS_IMG): $(MODULES)
 	mformat -i $@ -f 1440 ::; \
 	mmd -i $@ ::/EFI; \
 	mmd -i $@ ::/EFI/BOOT; \
-	mcopy -i $@ uefi_loader/$(OS_EFI) ::/EFI/BOOT/BOOTX64.EFI; \
-	mcopy -i $@ uefi_loader/hello.txt ::/hello.txt
+	mcopy -i $@ uefi_loader/$(OS_EFI) ::/EFI/BOOT/BOOTX64.EFI
 
 $(OS_ISO): $(OS_IMG)
 	mkdir -p iso

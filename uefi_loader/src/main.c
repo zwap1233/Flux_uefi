@@ -1,5 +1,6 @@
 
-#include "include.h"
+#include "main.h"
+#include "load.h"
 #include "utils.h"
 
 //#define __TEST
@@ -9,23 +10,20 @@
 //#define __TEST_POINTER
 //#define __TEST_STR
 
-EFI_STATUS printImageBase(EFI_HANDLE ImageHandle);
-void testPrintFunction();
-
 EFI_SYSTEM_TABLE *gST;
 
-EFI_GUID loaded_image_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
+EFI_GUID gEfiLoadedImageProtocolGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
 
 /**
  * @brief The entery point of the uefi loader
  * 
- * @param ImageHandle 
- * @param SystemTable 
- * @return EFI_STATUS 
+ * @param ImageHandle
+ * @param SystemTable
+ * @return EFI_STATUS
  */
 EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable){
-  EFI_STATUS status;
-  EFI_INPUT_KEY Key;
+  EFI_STATUS status = EFI_SUCCESS;
+  EFI_LOADED_IMAGE *LoadedImage = NULL;
 
   /* Store the system table for future use in other functions */
   gST = SystemTable;
@@ -36,35 +34,17 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable){
   testPrintFunction();
 #endif
 
-  status = printImageBase(ImageHandle);
+  //Fetch LoadedImage and print address
+  status = gST->BootServices->OpenProtocol(ImageHandle, &gEfiLoadedImageProtocolGuid, (void **) &LoadedImage, ImageHandle, NULL, EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
   if(EFI_ERROR(status)){
-    return status;
+    printk(L"ERROR:%d", status);
   }
+  printk(L"Image base: %#08p\n\r", LoadedImage->ImageBase);
 
-  status = loadOS(ImageHandle, gST->BootServices);
+  status = loadOS(ImageHandle, LoadedImage->DeviceHandle, gST->BootServices);
   printk(L"Status loadOS: %d", status);
 
   while (1){;}
-
-  return status;
-}
-
-/**
- * @brief Prints the address location where this image is loaded.
- * 
- * @param ImageHandle The EFI_HANDLE
- * @return EFI_STATUS 
- */
-EFI_STATUS printImageBase(EFI_HANDLE ImageHandle){
-  EFI_LOADED_IMAGE *loaded_image = NULL;
-  EFI_STATUS status = EFI_SUCCESS;
-
-  status = gST->BootServices->HandleProtocol(ImageHandle, &loaded_image_guid, (void **) &loaded_image);
-  if(EFI_ERROR(status)){
-    return status;
-  }
-
-  printk(L"Image base: %#08p\n\r", loaded_image->ImageBase);
 
   return status;
 }

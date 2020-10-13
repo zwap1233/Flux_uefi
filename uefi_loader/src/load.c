@@ -1,15 +1,8 @@
 
-#include "include.h"
+#include "load.h"
 #include "utils.h"
 
-#define NR_HANDLES 20
-
-EFI_HANDLE handles[NR_HANDLES];
-EFI_GUID fs_prot = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
-
-EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *fs_intf;
-EFI_FILE_PROTOCOL *root;
-EFI_FILE_PROTOCOL *hello;
+EFI_GUID gEfiSimpleFileSystemProtocolGuid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
 
 /**
  * @brief Load the kernal into memory.
@@ -18,27 +11,24 @@ EFI_FILE_PROTOCOL *hello;
  * @param BootServices The EFI_BOOT_SERVICES
  * @return EFI_STATUS 
  */
-EFI_STATUS loadOS(EFI_HANDLE ImageHandle, EFI_BOOT_SERVICES *BootServices){
+EFI_STATUS loadOS(EFI_HANDLE ImageHandle, EFI_HANDLE DeviceHandle, EFI_BOOT_SERVICES *BootServices){
+  EFI_STATUS status = EFI_SUCCESS;
 
-  UINTN handles_size = sizeof(handles)*NR_HANDLES;
+  EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *FileSystem;
+  EFI_FILE_PROTOCOL *Root;
 
-  EFI_STATUS status = BootServices->LocateHandle(ByProtocol, &fs_prot, NULL, &handles_size, handles);
+
+  status = BootServices->OpenProtocol(DeviceHandle, &gEfiSimpleFileSystemProtocolGuid, (void **) &FileSystem, ImageHandle, NULL, EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
   if(EFI_ERROR(status)){
     return status;
   }
 
-  status = BootServices->OpenProtocol(handles[0], &fs_prot, (void **) &fs_intf, ImageHandle, NULL, EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
+  status = FileSystem->OpenVolume(FileSystem, &Root);
   if(EFI_ERROR(status)){
     return status;
   }
 
-  status = fs_intf->OpenVolume(fs_intf, &root);
-  if(EFI_ERROR(status)){
-    return status;
-  }
-  printk(L"Status: %d\n\r", status);
-
-  status = root->Open(root, &hello, L"\\hello.txt", EFI_FILE_MODE_READ, NULL);
+  /*status = Root->Open(Root, &hello, L"\\hello.txt", EFI_FILE_MODE_READ, 0);
   if(EFI_ERROR(status)){
     return status;
   }
@@ -49,15 +39,14 @@ EFI_STATUS loadOS(EFI_HANDLE ImageHandle, EFI_BOOT_SERVICES *BootServices){
   status = hello->Read(hello, &buffersize, buffer);
   if(EFI_ERROR(status)){
     return status;
-  }
-  buffer[20] = '\0';
-  printk(L"Status: %d\n\r", status);
-
-  printk(L"Text: %S \n\r", buffer);
+  }*/
 
   return status;
 
-  //find handle using LocateHandle()
-  //open protocol
+  //allocate memory
   //close protocol
+}
+
+EFI_STATUS allocateMemory(EFI_HANDLE ImageHandle, EFI_BOOT_SERVICES *BootServices){
+  return 0;
 }
